@@ -319,14 +319,39 @@ const Index = () => {
 
               {currentStep === 6 && (
                 <div className="text-center space-y-6">
-                  <div className="animate-pulse-glow">
-                    <Icon name="Clock" size={64} className="mx-auto text-mfo-blue-500 mb-4" />
+                  {/* 3D Летящий самолет */}
+                  <div className="relative h-32 mb-8 overflow-hidden">
+                    {/* Фон неба с градиентом */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-200 via-blue-100 to-blue-200 rounded-lg"></div>
+                    
+                    {/* Облака */}
+                    <div className="absolute top-4 left-1/4 text-white text-2xl opacity-60 animate-pulse">☁️</div>
+                    <div className="absolute top-8 right-1/3 text-white text-xl opacity-40 animate-pulse">☁️</div>
+                    <div className="absolute bottom-6 left-1/2 text-white text-lg opacity-50 animate-pulse">☁️</div>
+                    
+                    {/* Тень самолета */}
+                    <div className="absolute bottom-2 animate-plane-shadow">
+                      <div className="w-12 h-3 bg-gray-400 opacity-30 rounded-full blur-sm transform scale-x-150"></div>
+                    </div>
+                    
+                    {/* Летящий самолет */}
+                    <div className="absolute top-1/2 transform -translate-y-1/2 animate-plane-fly">
+                      <div className="text-4xl drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.3))' }}>
+                        ✈️
+                      </div>
+                    </div>
+                    
+                    {/* Инверсионный след */}
+                    <div className="absolute top-1/2 left-0 w-full h-0.5 transform -translate-y-1/2">
+                      <div className="h-full bg-gradient-to-r from-transparent via-white to-transparent opacity-40 animate-pulse"></div>
+                    </div>
                   </div>
+
                   <h2 className="text-2xl font-bold text-mfo-blue-800">
                     ⏱️ Рассмотрение заявки
                   </h2>
-                  <div className="bg-mfo-blue-50 rounded-lg p-6 border border-mfo-blue-200">
-                    <div className="text-4xl font-bold text-mfo-blue-700 mb-2">
+                  <div className="bg-mfo-blue-50 rounded-lg p-6 border border-mfo-blue-200 shadow-lg">
+                    <div className="text-4xl font-bold text-mfo-blue-700 mb-2 animate-pulse">
                       {timer} сек
                     </div>
                     <p className="text-mfo-blue-600">

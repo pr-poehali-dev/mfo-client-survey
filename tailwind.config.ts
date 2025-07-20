@@ -125,6 +125,38 @@ export default {
 				'pulse-glow': {
 					'0%, 100%': { boxShadow: '0 0 20px rgba(37, 99, 235, 0.3)' },
 					'50%': { boxShadow: '0 0 40px rgba(37, 99, 235, 0.6)' }
+				},
+				'plane-fly': {
+					'0%': { 
+						transform: 'translateX(-100px) translateY(10px) rotateZ(-10deg)',
+						opacity: '0'
+					},
+					'10%': { 
+						opacity: '1'
+					},
+					'50%': { 
+						transform: 'translateX(50%) translateY(-5px) rotateZ(5deg)'
+					},
+					'100%': { 
+						transform: 'translateX(calc(100% + 100px)) translateY(15px) rotateZ(-5deg)',
+						opacity: '0'
+					}
+				},
+				'plane-shadow': {
+					'0%': { 
+						transform: 'translateX(-80px) scale(0.8)',
+						opacity: '0'
+					},
+					'10%': { 
+						opacity: '0.3'
+					},
+					'50%': { 
+						transform: 'translateX(50%) scale(1)'
+					},
+					'100%': { 
+						transform: 'translateX(calc(100% + 80px)) scale(0.8)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
@@ -133,7 +165,9 @@ export default {
 				'fade-in': 'fade-in 0.6s ease-out',
 				'slide-up': 'slide-up 0.4s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
-				'pulse-glow': 'pulse-glow 2s ease-in-out infinite'
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'plane-fly': 'plane-fly 4s ease-in-out infinite',
+				'plane-shadow': 'plane-shadow 4s ease-in-out infinite'
 			}
 		}
 	},
