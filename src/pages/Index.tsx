@@ -14,6 +14,9 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     phone: '',
+    firstName: '',
+    lastName: '',
+    email: '',
     address: '',
     workAddress: '',
     relativesContact: '',
@@ -88,6 +91,100 @@ const Index = () => {
     return Math.round(amount * (1 + rate * period) / period);
   };
 
+  // Экспорт данных для RetailCRM
+  const exportToRetailCRM = () => {
+    const retailCRMData = {
+      // Основная информация клиента
+      customer: {
+        firstName: formData.firstName || 'Не указано',
+        lastName: formData.lastName || 'Не указано',
+        email: formData.email || '',
+        phones: [{
+          number: formData.phone,
+          type: 'mobile'
+        }],
+        address: {
+          text: formData.address
+        },
+        customFields: {
+          work_address: formData.workAddress,
+          relatives_contact: formData.relativesContact
+        }
+      },
+      // Заявка на займ
+      order: {
+        orderType: 'loan-application',
+        source: 'website',
+        status: applicationStatus === 'approved' ? 'approved' : (applicationStatus === 'rejected' ? 'rejected' : 'processing'),
+        customFields: {
+          loan_amount: formData.amount[0],
+          loan_period: formData.period[0],
+          loan_rate: '3% в день',
+          monthly_payment: calculateMonthlyPayment(),
+          has_debt: hasDebt,
+          verification_status: isVerifying ? 'pending' : 'completed',
+          application_date: new Date().toISOString(),
+          timer_remaining: timer
+        },
+        items: [{
+          productName: `Займ на ${formData.amount[0].toLocaleString()} ₽`,
+          quantity: 1,
+          price: formData.amount[0]
+        }]
+      },
+      // Метаданные
+      metadata: {
+        source: 'mfo-website',
+        user_agent: navigator.userAgent,
+        timestamp: new Date().toISOString(),
+        form_version: '1.0',
+        current_step: currentStep
+      }
+    };
+
+    // Копирование в буфер обмена
+    navigator.clipboard.writeText(JSON.stringify(retailCRMData, null, 2)).then(() => {
+      alert('✅ Данные скопированы в буфер обмена!\nТеперь их можно импортировать в RetailCRM');
+    }).catch(() => {
+      // Fallback для старых браузеров
+      const textArea = document.createElement('textarea');
+      textArea.value = JSON.stringify(retailCRMData, null, 2);
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('✅ Данные скопированы в буфер обмена!');
+    });
+
+    // Логирование для разработчика
+    console.log('RetailCRM Export Data:', retailCRMData);
+  };
+
+  // Скачивание данных как JSON файл
+  const downloadDataAsJSON = () => {
+    const dataToExport = {
+      customer: formData,
+      application: {
+        status: applicationStatus,
+        amount: formData.amount[0],
+        period: formData.period[0],
+        monthly_payment: calculateMonthlyPayment(),
+        has_debt: hasDebt,
+        created_at: new Date().toISOString()
+      }
+    };
+
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mfo-application-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const steps = [
     'Персональные данные',
     'Адреса',
@@ -136,6 +233,39 @@ const Index = () => {
                     📱 Персональные данные
                   </h2>
                   <div className="grid gap-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="firstName">Имя *</Label>
+                        <Input
+                          id="firstName"
+                          placeholder="Введите ваше имя"
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName">Фамилия *</Label>
+                        <Input
+                          id="lastName"
+                          placeholder="Введите вашу фамилию"
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="example@mail.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
                     <div>
                       <Label htmlFor="phone">Номер телефона *</Label>
                       <Input
@@ -390,13 +520,32 @@ const Index = () => {
                         <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
                           Статус: ОДОБРЕНО
                         </Badge>
-                        <div className="mt-6">
+                        <div className="mt-6 space-y-3">
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Button 
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => setShowCallbackDialog(true)}
+                            >
+                              <Icon name="Phone" className="mr-2" />
+                              Получить звонок
+                            </Button>
+                            <Button 
+                              variant="outline"
+                              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                              onClick={exportToRetailCRM}
+                            >
+                              <Icon name="Database" className="mr-2" />
+                              Экспорт в CRM
+                            </Button>
+                          </div>
                           <Button 
-                            className="bg-green-600 hover:bg-green-700 mr-4"
-                            onClick={() => setShowCallbackDialog(true)}
+                            variant="ghost" 
+                            size="sm"
+                            onClick={downloadDataAsJSON}
+                            className="text-gray-600 hover:text-gray-800"
                           >
-                            <Icon name="Phone" className="mr-2" />
-                            Получить звонок
+                            <Icon name="Download" className="mr-2" />
+                            Скачать данные (.json)
                           </Button>
                         </div>
                       </div>
@@ -442,7 +591,7 @@ const Index = () => {
                   onClick={handleNextStep}
                   className="bg-mfo-blue-600 hover:bg-mfo-blue-700 animate-pulse-glow"
                   disabled={
-                    (currentStep === 1 && !formData.phone) ||
+                    (currentStep === 1 && (!formData.phone || !formData.firstName || !formData.lastName)) ||
                     (currentStep === 2 && !formData.address) ||
                     (currentStep === 3 && !formData.relativesContact) ||
                     (currentStep === 4 && !formData.documents)
