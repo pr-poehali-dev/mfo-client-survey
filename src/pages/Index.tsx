@@ -27,6 +27,7 @@ const Index = () => {
   const [timer, setTimer] = useState(50);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [showCallbackDialog, setShowCallbackDialog] = useState(false);
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const [hasDebt, setHasDebt] = useState(false);
 
   // Таймер рассмотрения заявки
@@ -36,8 +37,14 @@ const Index = () => {
         setTimer(prev => {
           if (prev === 1) {
             // Случайно определяем одобрение или отказ
-            setApplicationStatus(Math.random() > 0.3 ? 'approved' : 'rejected');
+            const isApproved = Math.random() > 0.3;
+            setApplicationStatus(isApproved ? 'approved' : 'rejected');
             setHasDebt(Math.random() > 0.7);
+            
+            // Показываем диалог одобрения если заявка одобрена
+            if (isApproved && !hasDebt) {
+              setTimeout(() => setShowApprovalDialog(true), 1000);
+            }
           }
           return prev - 1;
         });
@@ -480,6 +487,60 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Диалог одобрения заявки */}
+      <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
+        <DialogContent className="animate-scale-in max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-green-700">🎉 Заявка одобрена!</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 text-center">
+            <div className="bg-green-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto">
+              <Icon name="CheckCircle" size={48} className="text-green-500" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-green-700">Поздравляем!</h3>
+              <p className="text-gray-600">
+                Ваш займ на <strong>{formData.amount[0].toLocaleString()} ₽</strong> одобрен
+              </p>
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <p className="text-blue-700 font-medium mb-2">
+                Оператор свяжется с вами в ближайшее время
+              </p>
+              <div className="flex items-center justify-center space-x-2">
+                <Icon name="Phone" size={20} className="text-blue-600" />
+                <span className="text-blue-600 font-bold">+7 (499) 388-38-38</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                onClick={() => {
+                  setShowApprovalDialog(false);
+                  handleNextStep();
+                }}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                <Icon name="ArrowRight" className="mr-2" />
+                Продолжить
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => {
+                  window.location.href = 'tel:+74993883838';
+                }}
+                className="w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+              >
+                <Icon name="Phone" className="mr-2" />
+                Позвонить сейчас
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
