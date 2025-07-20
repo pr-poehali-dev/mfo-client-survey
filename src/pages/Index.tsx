@@ -480,17 +480,7 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Уведомление о куки */}
-      <div className="fixed bottom-4 left-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-4 animate-slide-up">
-        <div className="flex items-center justify-between">
-          <Button size="sm" variant="outline" className="mr-4 flex-shrink-0">
-            Принять
-          </Button>
-          <p className="text-sm text-gray-600">
-            Мы используем cookies для улучшения работы сайта.
-          </p>
-        </div>
-      </div>
+
     </div>
   );
 };
