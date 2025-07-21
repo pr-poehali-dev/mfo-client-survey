@@ -25,6 +25,7 @@ const Index = () => {
     documents: null as File | null,
   });
   const [verificationCode, setVerificationCode] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState('reviewing'); // 'approved', 'rejected', 'reviewing'
   const [timer, setTimer] = useState(50);
@@ -69,9 +70,10 @@ const Index = () => {
   };
 
   const handleVerifyPhone = () => {
-    setShowCodeDialog(true);
     // Генерация кода (имитация)
-    const code = Math.floor(1000 + Math.random() * 9000);
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedCode(code);
+    setShowCodeDialog(true);
     console.log('Код подтверждения:', code);
   };
 
@@ -197,12 +199,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-mfo-blue-50 via-white to-mfo-blue-100 font-[Roboto]">
-      {/* Заголовок с 3D эффектом */}
+      {/* Заголовок с логотипом */}
       <div className="bg-gradient-to-r from-mfo-blue-600 to-mfo-blue-800 text-white py-8 shadow-2xl">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center mb-2 animate-fade-in">
-            💰 БЫСТРЫЕ ЗАЙМЫ
-          </h1>
+          {/* Логотип "Деньги в дом" */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center space-x-3 bg-white/10 rounded-2xl px-6 py-3 backdrop-blur-sm border border-white/20">
+              <div className="text-4xl animate-bounce">🏠</div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">ДЕНЬГИ В ДОМ</h1>
+                <div className="text-yellow-300 text-sm font-medium">БЫСТРЫЕ ЗАЙМЫ</div>
+              </div>
+              <div className="text-4xl animate-pulse">💰</div>
+            </div>
+          </div>
+          
           <p className="text-center text-mfo-blue-100 text-lg animate-fade-in">
             Получите деньги за 15 минут • До 100,000 ₽ • Без справок
           </p>
@@ -226,32 +237,32 @@ const Index = () => {
             </div>
 
             {/* Этапы анкеты */}
-            <div className="animate-fade-in">
+            <div className="animate-fadeInUp">
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-mfo-blue-800 mb-6">
+                  <h2 className="text-2xl font-bold text-mfo-blue-800 mb-6 animate-slideInLeft">
                     📱 Персональные данные
                   </h2>
-                  <div className="grid gap-4">
+                  <div className="grid gap-4 animate-scaleInBounce">
                     <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">Имя *</Label>
+                      <div className="animate-slideInLeft">
+                        <Label htmlFor="firstName" className="animate-float">Имя *</Label>
                         <Input
                           id="firstName"
                           placeholder="Введите ваше имя"
                           value={formData.firstName}
                           onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                          className="mt-1"
+                          className="mt-1 transition-all duration-300 focus:animate-pulseGlow"
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="lastName">Фамилия *</Label>
+                      <div className="animate-slideInRight">
+                        <Label htmlFor="lastName" className="animate-float">Фамилия *</Label>
                         <Input
                           id="lastName"
                           placeholder="Введите вашу фамилию"
                           value={formData.lastName}
                           onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                          className="mt-1"
+                          className="mt-1 transition-all duration-300 focus:animate-pulseGlow"
                         />
                       </div>
                     </div>
@@ -554,21 +565,21 @@ const Index = () => {
               )}
             </div>
 
-            {/* Кнопки навигации */}
+            {/* Кнопки навигации с анимацией */}
             {currentStep < 6 && (
-              <div className="flex justify-between mt-8">
+              <div className="flex justify-between mt-8 animate-fadeInUp">
                 <Button
                   variant="outline"
                   onClick={handlePrevStep}
                   disabled={currentStep === 1}
-                  className="border-mfo-blue-300 text-mfo-blue-700"
+                  className="border-mfo-blue-300 text-mfo-blue-700 animate-slideInLeft hover:animate-scaleInBounce transition-all duration-300"
                 >
-                  <Icon name="ChevronLeft" className="mr-2" />
+                  <Icon name="ChevronLeft" className="mr-2 animate-float" />
                   Назад
                 </Button>
                 <Button
                   onClick={handleNextStep}
-                  className="bg-mfo-blue-600 hover:bg-mfo-blue-700 animate-pulse-glow"
+                  className="bg-mfo-blue-600 hover:bg-mfo-blue-700 animate-pulseGlow hover:animate-scaleInBounce transition-all duration-300"
                   disabled={
                     (currentStep === 1 && (!formData.phone || !formData.firstName || !formData.lastName)) ||
                     (currentStep === 2 && !formData.address) ||
@@ -577,7 +588,7 @@ const Index = () => {
                   }
                 >
                   Далее
-                  <Icon name="ChevronRight" className="ml-2" />
+                  <Icon name="ChevronRight" className="ml-2 animate-float" />
                 </Button>
               </div>
             )}
@@ -593,6 +604,18 @@ const Index = () => {
           </DialogHeader>
           <div className="space-y-4">
             <p>Введите код, отправленный на номер {formData.phone}</p>
+            
+            {/* Автоматически сгенерированный код */}
+            {generatedCode && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                <p className="text-sm text-blue-600 mb-2">📨 SMS код отправлен:</p>
+                <div className="text-3xl font-bold text-blue-800 tracking-widest animate-pulse">
+                  {generatedCode}
+                </div>
+                <p className="text-xs text-blue-500 mt-2">Скопируйте код в поле ниже</p>
+              </div>
+            )}
+            
             <Input
               placeholder="0000"
               value={verificationCode}
@@ -600,13 +623,26 @@ const Index = () => {
               maxLength={4}
               className="text-center text-2xl"
             />
-            <Button
-              onClick={handleCodeSubmit}
-              disabled={verificationCode.length !== 4 || isVerifying}
-              className="w-full bg-mfo-blue-600 hover:bg-mfo-blue-700"
-            >
-              {isVerifying ? 'Проверка...' : 'Подтвердить'}
-            </Button>
+            
+            <div className="flex gap-2">
+              <Button
+                onClick={handleCodeSubmit}
+                disabled={verificationCode.length !== 4 || isVerifying}
+                className="flex-1 bg-mfo-blue-600 hover:bg-mfo-blue-700"
+              >
+                {isVerifying ? 'Проверка...' : 'Подтвердить'}
+              </Button>
+              
+              {generatedCode && (
+                <Button
+                  variant="outline"
+                  onClick={() => setVerificationCode(generatedCode)}
+                  className="px-4"
+                >
+                  Вставить
+                </Button>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
