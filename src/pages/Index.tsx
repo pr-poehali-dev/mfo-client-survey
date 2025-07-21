@@ -511,42 +511,21 @@ const Index = () => {
                     <div className="animate-scale-in">
                       <div className="bg-green-50 border border-green-200 rounded-lg p-8">
                         <Icon name="CheckCircle" size={64} className="mx-auto text-green-500 mb-4" />
-                        <h2 className="text-2xl font-bold text-green-700 mb-4">
+                        <h2 className="text-2xl font-bold text-green-700 mb-6">
                           🎉 Заявка одобрена!
                         </h2>
-                        <p className="text-green-600 mb-6">
-                          Поздравляем! Ваш займ на {formData.amount[0].toLocaleString()} ₽ одобрен.
-                        </p>
-                        <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
-                          Статус: ОДОБРЕНО
-                        </Badge>
-                        <div className="mt-6 space-y-3">
-                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <Button 
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={() => setShowCallbackDialog(true)}
-                            >
-                              <Icon name="Phone" className="mr-2" />
-                              Получить звонок
-                            </Button>
-                            <Button 
-                              variant="outline"
-                              className="border-blue-300 text-blue-700 hover:bg-blue-50"
-                              onClick={exportToRetailCRM}
-                            >
-                              <Icon name="Database" className="mr-2" />
-                              Экспорт в CRM
-                            </Button>
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-lg p-6 border-2 border-green-200">
+                            <p className="text-lg font-semibold text-green-700 mb-2">
+                              Сумма одобрения:
+                            </p>
+                            <p className="text-3xl font-bold text-green-800">
+                              {formData.amount[0].toLocaleString()} ₽
+                            </p>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={downloadDataAsJSON}
-                            className="text-gray-600 hover:text-gray-800"
-                          >
-                            <Icon name="Download" className="mr-2" />
-                            Скачать данные (.json)
-                          </Button>
+                          <p className="text-green-600 text-lg">
+                            С вами свяжется специалист в ближайшее время
+                          </p>
                         </div>
                       </div>
                     </div>
