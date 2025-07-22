@@ -23,6 +23,11 @@ const Index = () => {
     amount: [50000],
     period: [30],
     documents: null as File | null,
+    passportSeries: '',
+    passportNumber: '',
+    passportIssueDate: '',
+    passportPhoto: null as File | null,
+    passportSelfie: null as File | null,
   });
   const [verificationCode, setVerificationCode] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
@@ -33,6 +38,8 @@ const Index = () => {
   const [showCallbackDialog, setShowCallbackDialog] = useState(false);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const [hasDebt, setHasDebt] = useState(false);
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
+  const [documentStep, setDocumentStep] = useState(1);
 
   // Таймер рассмотрения заявки
   useEffect(() => {
@@ -350,35 +357,90 @@ const Index = () => {
 
               {currentStep === 4 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-mfo-blue-800 mb-6">
-                    📄 Загрузка документов
+                  <h2 className="text-2xl font-bold text-mfo-blue-800 mb-6 animate-slideInLeft">
+                    📄 Паспортные данные и документы
                   </h2>
-                  <div className="border-2 border-dashed border-mfo-blue-300 rounded-lg p-8 text-center hover:border-mfo-blue-500 transition-colors">
-                    <Icon name="Upload" size={48} className="mx-auto text-mfo-blue-400 mb-4" />
-                    <p className="text-lg font-medium text-mfo-blue-700 mb-2">
-                      Загрузите фото паспорта
-                    </p>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Поддерживаемые форматы: JPG, PNG (до 5 МБ)
-                    </p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setFormData({...formData, documents: e.target.files?.[0] || null})}
-                      className="hidden"
-                      id="documents"
-                    />
-                    <Label htmlFor="documents">
-                      <Button asChild className="bg-mfo-blue-600 hover:bg-mfo-blue-700">
-                        <span>Выбрать файл</span>
+                  
+                  {/* Поля паспортных данных */}
+                  <Card className="animate-fadeInUp bg-gradient-to-br from-blue-50 to-white border-blue-200">
+                    <CardHeader>
+                      <CardTitle className="text-blue-700 flex items-center gap-2">
+                        <Icon name="CreditCard" className="animate-float" />
+                        Данные паспорта
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="animate-slideInLeft">
+                          <Label htmlFor="passportSeries" className="animate-float">Серия паспорта *</Label>
+                          <Input
+                            id="passportSeries"
+                            placeholder="1234"
+                            maxLength={4}
+                            value={formData.passportSeries}
+                            onChange={(e) => setFormData({...formData, passportSeries: e.target.value.replace(/\D/g, '')})}
+                            className="mt-1 transition-all duration-300 focus:animate-pulseGlow"
+                          />
+                        </div>
+                        <div className="animate-slideInRight">
+                          <Label htmlFor="passportNumber" className="animate-float">Номер паспорта *</Label>
+                          <Input
+                            id="passportNumber"
+                            placeholder="567890"
+                            maxLength={6}
+                            value={formData.passportNumber}
+                            onChange={(e) => setFormData({...formData, passportNumber: e.target.value.replace(/\D/g, '')})}
+                            className="mt-1 transition-all duration-300 focus:animate-pulseGlow"
+                          />
+                        </div>
+                      </div>
+                      <div className="animate-scaleInBounce">
+                        <Label htmlFor="passportIssueDate" className="animate-float">Дата выдачи *</Label>
+                        <Input
+                          id="passportIssueDate"
+                          type="date"
+                          value={formData.passportIssueDate}
+                          onChange={(e) => setFormData({...formData, passportIssueDate: e.target.value})}
+                          className="mt-1 transition-all duration-300 focus:animate-pulseGlow"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Загрузка документов */}
+                  <Card className="animate-fadeInUp bg-gradient-to-br from-green-50 to-white border-green-200">
+                    <CardHeader>
+                      <CardTitle className="text-green-700 flex items-center gap-2">
+                        <Icon name="Camera" className="animate-float" />
+                        Загрузка фотографий
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Button
+                        onClick={() => setShowDocumentUpload(true)}
+                        className="w-full bg-green-600 hover:bg-green-700 animate-pulseGlow text-lg py-4"
+                      >
+                        <Icon name="Upload" className="mr-2 animate-float" />
+                        Загрузить документы (2 фото)
                       </Button>
-                    </Label>
-                    {formData.documents && (
-                      <p className="text-green-600 mt-2">
-                        ✅ Файл загружен: {formData.documents.name}
-                      </p>
-                    )}
-                  </div>
+                      
+                      {/* Статус загруженных файлов */}
+                      <div className="mt-4 space-y-2">
+                        {formData.passportPhoto && (
+                          <div className="flex items-center gap-2 text-green-600 animate-slideInLeft">
+                            <Icon name="CheckCircle" />
+                            <span>✅ Фото паспорта: {formData.passportPhoto.name}</span>
+                          </div>
+                        )}
+                        {formData.passportSelfie && (
+                          <div className="flex items-center gap-2 text-green-600 animate-slideInRight">
+                            <Icon name="CheckCircle" />
+                            <span>✅ Фото с паспортом: {formData.passportSelfie.name}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               )}
 
@@ -584,7 +646,7 @@ const Index = () => {
                     (currentStep === 1 && (!formData.phone || !formData.firstName || !formData.lastName)) ||
                     (currentStep === 2 && !formData.address) ||
                     (currentStep === 3 && !formData.relativesContact) ||
-                    (currentStep === 4 && !formData.documents)
+                    (currentStep === 4 && (!formData.documents || !formData.passportSeries || !formData.passportNumber || !formData.passportIssueDate || !formData.passportPhoto || !formData.passportSelfie))
                   }
                 >
                   Далее
@@ -727,6 +789,139 @@ const Index = () => {
                 Позвонить сейчас
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Диалог пошаговой загрузки документов */}
+      <Dialog open={showDocumentUpload} onOpenChange={setShowDocumentUpload}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-blue-700 flex items-center justify-center gap-2">
+              <Icon name="FileText" className="animate-float" />
+              Загрузка документов
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Прогресс загрузки документов */}
+            <div className="text-center">
+              <div className="text-sm text-gray-600 mb-2">Шаг {documentStep} из 2</div>
+              <Progress value={(documentStep / 2) * 100} className="h-2" />
+            </div>
+
+            {/* Шаг 1: Фото паспорта */}
+            {documentStep === 1 && (
+              <div className="text-center space-y-4 animate-fadeInUp">
+                <div className="text-6xl mb-4">📘</div>
+                <h3 className="text-lg font-bold text-blue-700">Сфотографируйте паспорт</h3>
+                <ul className="text-left text-sm text-gray-600 space-y-1 bg-blue-50 p-4 rounded-lg">
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Разворот с фото и данными
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Четкое изображение без бликов
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Все данные видны и читаемы
+                  </li>
+                </ul>
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setFormData({...formData, passportPhoto: file});
+                      setDocumentStep(2);
+                    }
+                  }}
+                  className="hidden"
+                  id="passport-photo"
+                />
+                <Label htmlFor="passport-photo">
+                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                    <span className="flex items-center gap-2">
+                      <Icon name="Camera" />
+                      Сделать фото паспорта
+                    </span>
+                  </Button>
+                </Label>
+              </div>
+            )}
+
+            {/* Шаг 2: Селфи с паспортом */}
+            {documentStep === 2 && (
+              <div className="text-center space-y-4 animate-fadeInUp">
+                <div className="text-6xl mb-4">🤳</div>
+                <h3 className="text-lg font-bold text-blue-700">Сделайте селфи с паспортом</h3>
+                <ul className="text-left text-sm text-gray-600 space-y-1 bg-green-50 p-4 rounded-lg">
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Держите паспорт рядом с лицом
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Хорошее освещение
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-500" />
+                    Лицо и паспорт четко видны
+                  </li>
+                </ul>
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setFormData({...formData, passportSelfie: file});
+                      setShowDocumentUpload(false);
+                      setDocumentStep(1);
+                    }
+                  }}
+                  className="hidden"
+                  id="passport-selfie"
+                />
+                <div className="space-y-3">
+                  <Label htmlFor="passport-selfie">
+                    <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                      <span className="flex items-center gap-2">
+                        <Icon name="Camera" />
+                        Сделать селфи с паспортом
+                      </span>
+                    </Button>
+                  </Label>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={() => setDocumentStep(1)}
+                    className="w-full"
+                  >
+                    <Icon name="ArrowLeft" className="mr-2" />
+                    Назад к фото паспорта
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Кнопка отмены */}
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDocumentUpload(false);
+                setDocumentStep(1);
+              }}
+              className="w-full text-gray-500"
+            >
+              Отмена
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
